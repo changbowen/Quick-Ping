@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Quick Ping by changbowen</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Quick Ping</h1>
+        <p class="header">Multi-threaded ping tool based on WMI. Supports getting ping results from remote PC in domain.</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/changbowen/Quick-Ping/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/changbowen/Quick-Ping/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/changbowen/Quick-Ping">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/changbowen">changbowen</a></p>
+
+
+      </header>
+      <section>
+        <h1>
+<a id="quick-ping" class="anchor" href="#quick-ping" aria-hidden="true"><span class="octicon octicon-link"></span></a>Quick Ping</h1>
+
+<p>Multi-threaded ping tool based on WMI. Supports getting ping results from remote PC in domain.</p>
+
+<h2>
+<a id="motivation" class="anchor" href="#motivation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Motivation</h2>
+
+<p>A multi-threaded ping tool based on WMI. Supports getting ping results from remote PC in domain (needs to be logged on as domain administrator). For example in a global company with multiple sites, for a person located in Hong Kong office, he / she can ping Singapore server from Sydney server without having to remotely connect to Sydney server first.</p>
+
+<h2>
+<a id="screenshot" class="anchor" href="#screenshot" aria-hidden="true"><span class="octicon octicon-link"></span></a>Screenshot</h2>
+
+<p><img src="http://carlchang.blog.com/files/2015/12/Screenshot_QP.png" alt="" width="767" height="390"></p>
+
+<h2>
+<a id="language--requirement" class="anchor" href="#language--requirement" aria-hidden="true"><span class="octicon octicon-link"></span></a>Language &amp; Requirement</h2>
+
+<ul>
+    <li>VB application written in VB.net</li>
+    <li>.Net framework 4.5 or above.</li>
+</ul>
+
+<h2>
+<a id="features" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h2>
+
+<ul>
+    <li>Multi-threaded ping echos are sent to avoid having to wait for previous echos to return, delaying further echos to be sent.</li>
+    <li>Automatically generating a list of domain controllers if the local host is in domain. To get ping results from remote host (most likely to be a DC), you need to log in with a domain administrator account or other accounts with permissions to remotely log in to WMI (Windows Management Instrumentation).</li>
+    <li>A chart will be generated for each ping session as shown in the screenshot.</li>
+</ul>
+
+<h2>
+<a id="note" class="anchor" href="#note" aria-hidden="true"><span class="octicon octicon-link"></span></a>Note</h2>
+
+<ul>
+    <li>None</li>
+</ul>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
+  </body>
+</html>
