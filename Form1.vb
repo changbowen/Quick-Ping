@@ -1,4 +1,6 @@
-﻿Public Class Form1
+﻿Imports System.Windows.Forms.DataVisualization.Charting
+
+Public Class Form1
     Private Shared ReadOnly AllDC As New List(Of DirectoryServices.ActiveDirectory.DomainController)
     'Dim ippool(,) As String = {{"APACSIN", "192.168.34."}, {"APACHKG", "192.168.56."}, {"EMEACOP", "192.168.107."}, {"APACBEI", "192.168.33."}, {"APACSHI", "192.168.60."}, {"APACDEL", "192.168.35."}, {"APACBLR", "192.168.37."}, {"apacmum", "192.168.36."}, {"EMEASWE", "192.168.101."}, {"EMEAMIL", "192.168.100."}, {"EMEAPAR", "192.168.98."}, {"NABOS", "192.168.1."}, {"NANYC", "192.168.4."}, {"EMEAJOB", "192.168.104."}, {"EMEAAMS", "192.168.99."}, {"EMEAMUC", "192.168.97."}, {"EMEALON", "192.168.96."}, {"NASFO", "192.168.6."}, {"APACSYD", "192.168.57."}, {"NARCH", "192.168.2."}, {"EMEAMAD", "192.168.102."}, {"APACMALF", "192.168.61."}, {"NABOXWDS2012", "192.168.3."}}
     Private running As Boolean = False
@@ -117,7 +119,7 @@
             If TLP.Height <= chtheight * 2 Then Height += chtheight
             TLP.RowCount += 1
             TLP.RowStyles.Add(New RowStyle(SizeType.Absolute, chtheight))
-            cht = New DataVisualization.Charting.Chart
+            cht = New Chart
             cht.Dock = DockStyle.Fill
             'cht.Size = New Size(TLP.ClientSize.Width - 30, chtheight)
             cht.BackColor = Color.FromKnownColor(KnownColor.Control)
@@ -140,18 +142,20 @@
             cht.ChartAreas.Add("mainArea")
             With cht.ChartAreas("mainArea")
                 .BackColor = Color.FromKnownColor(KnownColor.Control)
-                .AxisX.LabelStyle.Enabled = False
-                .AxisX.LineColor = Color.FromKnownColor(KnownColor.Control)
                 .AxisY.LineColor = Color.FromKnownColor(KnownColor.Control)
-                .AxisY.LabelStyle.Font = New Font(.AxisX.LabelStyle.Font.FontFamily, 5)
+                .AxisX.LabelStyle.Font = New Font(.AxisX.LabelStyle.Font.FontFamily, 6)
+                .AxisY.LabelStyle.Font = New Font(.AxisY.LabelStyle.Font.FontFamily, 5)
                 .AxisY.Interval = 200
                 .AxisY.MajorTickMark.Enabled = False
+                .AxisX.LineColor = Color.FromKnownColor(KnownColor.Control)
                 .AxisX.MajorGrid.Enabled = False
                 '.AxisY.MajorGrid.Enabled = False
                 .AxisY.MajorGrid.LineColor = Color.LightGray
+                '.AxisX.LabelStyle.Enabled = False
+                .AxisX.LabelStyle.Format = "MM-dd HH:mm:ss"
                 '.AxisX.IntervalType = DataVisualization.Charting.DateTimeIntervalType.Hours
                 '.AxisX.IntervalOffsetType = DataVisualization.Charting.DateTimeIntervalType.Hours
-                '.AxisX.Interval = 1
+                '.AxisX.Interval = NUD_Delay.Value
                 '.AxisX.ScaleView.SmallScrollSizeType = DataVisualization.Charting.DateTimeIntervalType.Hours
                 '.AxisX.ScaleView.SmallScrollSize = 8
                 '.AxisX.ScaleView.SizeType = DataVisualization.Charting.DateTimeIntervalType.Hours
@@ -162,7 +166,9 @@
             End With
 
             chtSer = cht.Series.Add("mainSer")
+            chtSer.XValueType = ChartValueType.DateTime
             'cht.Series("mainSer")("PixelPointWidth") = "5"
+
             chtSer.Points.Clear()
             running = True
             Dim pingthread As Threading.Thread
@@ -179,7 +185,7 @@
                     .Font = New Font(Font.FontFamily, 8)
                     .Alignment = ContentAlignment.TopLeft
                 End With
-                pingthread = New Threading.Thread(Sub() ProxyPing(targetsvr, TB_ProxyAddr.Text, TB_ProxyPort.Text, Convert.ToInt32(NUD_Delay.Value)))
+                pingthread = New Threading.Thread(Sub() ProxyPing(targetsvr, TB_ProxyAddr.Text, NUD_ProxyPort.Value, Convert.ToInt32(NUD_Delay.Value)))
             End If
             TLP.Controls.Add(cht)
             TLP.ScrollControlIntoView(cht)
@@ -187,6 +193,7 @@
             pingthread.IsBackground = True
             pingthread.Start()
         Else
+            'Stop
             ListBox1.Enabled = False
             ListBox2.Enabled = False
             NUD_Delay.Enabled = False
@@ -195,8 +202,67 @@
         End If
     End Sub
 
-    Private Sub ProxyPing(ByVal target As String, ByVal proxy_svr As String, ByVal proxy_port As Integer, ByVal delay As Integer)
-        Dim restimetemp As Integer = 0, countall As Integer = 0, count As Integer = 0
+    Private Sub InitChartPoint(lock As Object, ByRef countall As Integer, ByRef currPoint As Integer)
+        SyncLock lock
+            countall += 1
+            currPoint = chtSer.Points.AddXY(Now, 0)
+            'total count
+            Lbl_Total.Text = countall
+        End SyncLock
+        chtSer.Points(currPoint).Color = Color.Gray
+        TextBox1.Text = "Ping..." & vbCrLf & TextBox1.Text
+    End Sub
+
+    Private Sub WaitInterval(delay As Integer)
+        If delay > 5000 Then
+            Dim d = delay
+            While running
+                If d > 5000 Then
+                    Threading.Thread.Sleep(5000)
+                    d -= 5000
+                ElseIf d > 0 Then
+                    Threading.Thread.Sleep(d)
+                    Exit While
+                End If
+            End While
+        Else
+            Threading.Thread.Sleep(delay)
+        End If
+    End Sub
+
+    Private Sub UpdateChart(elapsed As Long, currPoint As Integer, lock As Object, count As Integer,
+                            countall As Integer, resTimeSum As Integer, Optional repaddr As String = "")
+        If elapsed <> -1 Then
+            Dim tmparray = TextBox1.Lines
+            tmparray(tmparray.Length - 2 - currPoint) = elapsed.ToString & " ms"
+            TextBox1.Lines = tmparray
+            cht.Series("mainSer").Points(currPoint).SetValueY(elapsed)
+            If elapsed < 150 Then
+                chtSer.Points(currPoint).Color = Color.Green
+            ElseIf elapsed >= 150 Then
+                chtSer.Points(currPoint).Color = Color.Yellow
+            End If
+        Else
+            Dim tmparray = TextBox1.Lines
+            tmparray(tmparray.Length - 2 - currPoint) = "Timed Out"
+            TextBox1.Lines = tmparray
+            chtSer.Points(currPoint).SetValueY(1000)
+            chtSer.Points(currPoint).Color = Color.Red
+        End If
+        'TextBox1.ScrollToCaret()
+        SyncLock lock
+            'average ping
+            If count > 0 Then Lbl_Avg.Text = (resTimeSum \ count).ToString & " ms"
+            'loss
+            Lbl_Fail.Text = Math.Round((countall - count) / countall * 100).ToString & " %"
+        End SyncLock
+
+        If repaddr = "" Then Lbl_ReAddr.Text = "N/A" Else Lbl_ReAddr.Text = repaddr
+    End Sub
+
+    Private Sub ProxyPing(target As String, proxy_svr As String, proxy_port As Integer, delay As Integer)
+        'count is succeeded count. countall includes failed counts.
+        Dim resTimeSum = 0, countall = 0, count = 0
         Dim Lock_RT_C_CA As New Object
 
         Dim allpingthrd As New List(Of Task)
@@ -205,19 +271,12 @@
               Sub()
                   Try
                       Dim currPoint As Integer
-                      Invoke(Sub()
-                                 SyncLock Lock_RT_C_CA
-                                     countall += 1
-                                     currPoint = chtSer.Points.AddXY(countall, 0)
-                                     'total count
-                                     Lbl_Total.Text = countall
-                                 End SyncLock
-                                 chtSer.Points(currPoint).Color = Color.Gray
-                                 TextBox1.Text = "Ping..." & vbCrLf & TextBox1.Text
-                             End Sub)
+                      Invoke(Sub() InitChartPoint(Lock_RT_C_CA, countall, currPoint))
 
                       Dim request = Net.WebRequest.Create(New UriBuilder("http", target).Uri)
-                      request.Proxy = New Net.WebProxy(New UriBuilder("http", proxy_svr, proxy_port).Uri)
+                      If Not String.IsNullOrWhiteSpace(proxy_svr) Then
+                          request.Proxy = New Net.WebProxy(New UriBuilder("http", proxy_svr, proxy_port).Uri)
+                      End If
                       Dim timer As New Stopwatch
                       Dim resp As Net.WebResponse
                       Dim elapsed As Long = -1
@@ -235,43 +294,14 @@
                           End If
                       End Try
 
-                      If elapsed > 0 Then
+                      If elapsed > -1 Then
                           SyncLock Lock_RT_C_CA
-                              restimetemp += elapsed
+                              resTimeSum += elapsed
                               count += 1
                           End SyncLock
                       End If
 
-                      Invoke(Sub()
-                                 If elapsed <> -1 Then
-                                     Dim tmparray = TextBox1.Lines
-                                     tmparray(tmparray.Length - 2 - currPoint) = elapsed.ToString & " ms"
-                                     TextBox1.Lines = tmparray
-                                     cht.Series("mainSer").Points(currPoint).SetValueY(elapsed)
-                                     If elapsed < 150 Then
-                                         chtSer.Points(currPoint).Color = Color.Green
-                                     ElseIf elapsed >= 150 Then
-                                         chtSer.Points(currPoint).Color = Color.Yellow
-                                     End If
-                                 Else
-                                     Dim tmparray = TextBox1.Lines
-                                     tmparray(tmparray.Length - 2 - currPoint) = "Timed Out"
-                                     TextBox1.Lines = tmparray
-                                     chtSer.Points(currPoint).SetValueY(1000)
-                                     chtSer.Points(currPoint).Color = Color.Red
-                                 End If
-                                 'TextBox1.ScrollToCaret()
-                                 SyncLock Lock_RT_C_CA
-                                     'average ping
-                                     If count > 0 Then
-                                         Lbl_Avg.Text = (restimetemp \ count).ToString & " ms"
-                                     End If
-                                     'loss
-                                     Lbl_Fail.Text = Math.Round((countall - count) / countall * 100).ToString & " %"
-                                 End SyncLock
-
-                                 Lbl_ReAddr.Text = "N/A"
-                             End Sub)
+                      Invoke(Sub() UpdateChart(elapsed, currPoint, Lock_RT_C_CA, count, countall, resTimeSum))
                   Catch ex As Exception
                       running = False
                       MsgBox("The current connection has encountered an error retrieving data." & vbCrLf & "Error message: " & ex.Message & vbCrLf & "Proxy server: " & proxy_svr & vbCrLf & "Target server: " & target, MsgBoxStyle.Exclamation)
@@ -285,20 +315,7 @@
                              End Sub)
                   End Try
               End Sub))
-            If delay > 5000 Then
-                Dim d = delay
-                While running
-                    If d > 5000 Then
-                        Threading.Thread.Sleep(5000)
-                        d -= 5000
-                    ElseIf d > 0 Then
-                        Threading.Thread.Sleep(d)
-                        Exit While
-                    End If
-                End While
-            Else
-                Threading.Thread.Sleep(delay)
-            End If
+            WaitInterval(delay)
         Loop
 
         Task.WaitAll(allpingthrd.ToArray)
@@ -312,8 +329,8 @@
                End Sub)
     End Sub
 
-    Private Sub Ping(ByVal source As String, ByVal target As String, ByVal delay As Integer)
-        Dim restimetemp As Integer = 0, countall As Integer = 0, count As Integer = 0 ', countL As Integer = 0 , response As Integer = 0, responseRT As Integer = 0, loss As Single = 0, responsePA As String = ""
+    Private Sub Ping(source As String, target As String, delay As Integer)
+        Dim resTimeSum = 0, countall = 0, count = 0 ', countL As Integer = 0 , response As Integer = 0, responseRT As Integer = 0, loss As Single = 0, responsePA As String = ""
         Dim objWMIService, objSWbemLocator
         Dim Lock_RT_C_CA As New Object
         Try
@@ -331,107 +348,48 @@
         Dim allpingthrd As New List(Of Task)
         Do While running = True
             allpingthrd.Add(
-                Task.Run(Sub()
-                             Try
-                                 Dim responsePA = "", responseRT = -1
-                                 Dim currPoint As Integer
-                                 Invoke(Sub()
-                                            SyncLock Lock_RT_C_CA
-                                                countall += 1
-                                                currPoint = chtSer.Points.AddXY(countall, 0)
-                                                'total count
-                                                Lbl_Total.Text = countall
-                                            End SyncLock
-                                            chtSer.Points(currPoint).Color = Color.Gray
-                                            TextBox1.Text = "Ping..." & vbCrLf & TextBox1.Text
-                                        End Sub)
-                                 Dim resultset = objWMIService.Get("Win32_PingStatus.Address='" & target & "'")
-                                 If Not IsDBNull(resultset.StatusCode) Then
-                                     If resultset.StatusCode = 0 Then
-                                         responsePA = resultset.ProtocolAddress
-                                         responseRT = resultset.ResponseTime
-                                         SyncLock Lock_RT_C_CA
-                                             restimetemp += responseRT
-                                             count += 1
-                                         End SyncLock
-                                         'Else
-                                         '    countL += 1
-                                         '    responseRT = -1
-                                     End If
-                                     'Else
-                                     '    countL += 1
-                                     '    responseRT = -1
-                                 End If
-                                 If resultset IsNot Nothing Then
-                                     Runtime.InteropServices.Marshal.FinalReleaseComObject(resultset)
-                                     resultset = Nothing
-                                 End If
+                Task.Run(
+                Sub()
+                    Try
+                        Dim responsePA = "", responseRT = -1
+                        Dim currPoint As Integer
+                        Invoke(Sub() InitChartPoint(Lock_RT_C_CA, countall, currPoint))
 
-                                 Invoke(Sub()
-                                            If responseRT <> -1 Then
-                                                Dim tmparray = TextBox1.Lines
-                                                tmparray(tmparray.Length - 2 - currPoint) = responseRT.ToString & " ms"
-                                                TextBox1.Lines = tmparray
-                                                cht.Series("mainSer").Points(currPoint).SetValueY(responseRT)
-                                                If responseRT < 150 Then
-                                                    chtSer.Points(currPoint).Color = Color.Green
-                                                ElseIf responseRT >= 150 Then
-                                                    chtSer.Points(currPoint).Color = Color.Yellow
-                                                End If
-                                            Else
-                                                Dim tmparray = TextBox1.Lines
-                                                tmparray(tmparray.Length - 2 - currPoint) = "Timed Out"
-                                                TextBox1.Lines = tmparray
-                                                chtSer.Points(currPoint).SetValueY(1000)
-                                                chtSer.Points(currPoint).Color = Color.Red
-                                            End If
-                                            'TextBox1.ScrollToCaret()
-                                            SyncLock Lock_RT_C_CA
-                                                'average ping
-                                                If count > 0 Then
-                                                    Lbl_Avg.Text = (restimetemp \ count).ToString & " ms"
-                                                End If
-                                                'loss
-                                                Lbl_Fail.Text = Math.Round((countall - count) / countall * 100).ToString & " %"
-                                            End SyncLock
+                        Dim resultset = objWMIService.Get("Win32_PingStatus.Address='" & target & "'")
+                        If Not IsDBNull(resultset.StatusCode) Then
+                            If resultset.StatusCode = 0 Then
+                                responsePA = resultset.ProtocolAddress
+                                responseRT = resultset.ResponseTime
+                                SyncLock Lock_RT_C_CA
+                                    resTimeSum += responseRT
+                                    count += 1
+                                End SyncLock
+                            End If
+                        End If
+                        If resultset IsNot Nothing Then
+                            Runtime.InteropServices.Marshal.FinalReleaseComObject(resultset)
+                            resultset = Nothing
+                        End If
 
-                                            If responsePA = "" Then
-                                                Lbl_ReAddr.Text = "N/A"
-                                            Else
-                                                Lbl_ReAddr.Text = responsePA
-                                            End If
-                                        End Sub)
-                             Catch ex As Exception
-                                 running = False
-                                 MsgBox("The current connection has encountered an error retrieving data." & vbCrLf & "Error message: " & ex.Message & vbCrLf & "Source server: " & source & vbCrLf & "Target server: " & target, MsgBoxStyle.Exclamation)
-                                 If objWMIService IsNot Nothing Then Runtime.InteropServices.Marshal.ReleaseComObject(objWMIService)
-                                 'objWMIService = Nothing
-                                 If objSWbemLocator IsNot Nothing Then Runtime.InteropServices.Marshal.ReleaseComObject(objSWbemLocator)
-                                 'objSWbemLocator = Nothing
-                                 Invoke(Sub()
-                                            ListBox1.Enabled = True
-                                            ListBox2.Enabled = True
-                                            CB_S.Enabled = True
-                                            CB_T.Enabled = True
-                                            NUD_Delay.Enabled = True
-                                            Button1.Enabled = True
-                                        End Sub)
-                             End Try
-                         End Sub))
-            If delay > 5000 Then
-                Dim d = delay
-                While running
-                    If d > 5000 Then
-                        Threading.Thread.Sleep(5000)
-                        d -= 5000
-                    ElseIf d > 0 Then
-                        Threading.Thread.Sleep(d)
-                        Exit While
-                    End If
-                End While
-            Else
-                Threading.Thread.Sleep(delay)
-            End If
+                        Invoke(Sub() UpdateChart(responseRT, currPoint, Lock_RT_C_CA, count, countall, resTimeSum, responsePA))
+                    Catch ex As Exception
+                        running = False
+                        MsgBox("The current connection has encountered an error retrieving data." & vbCrLf & "Error message: " & ex.Message & vbCrLf & "Source server: " & source & vbCrLf & "Target server: " & target, MsgBoxStyle.Exclamation)
+                        If objWMIService IsNot Nothing Then Runtime.InteropServices.Marshal.ReleaseComObject(objWMIService)
+                        'objWMIService = Nothing
+                        If objSWbemLocator IsNot Nothing Then Runtime.InteropServices.Marshal.ReleaseComObject(objSWbemLocator)
+                        'objSWbemLocator = Nothing
+                        Invoke(Sub()
+                                   ListBox1.Enabled = True
+                                   ListBox2.Enabled = True
+                                   CB_S.Enabled = True
+                                   CB_T.Enabled = True
+                                   NUD_Delay.Enabled = True
+                                   Button1.Enabled = True
+                               End Sub)
+                    End Try
+                End Sub))
+            WaitInterval(delay)
         Loop
 
         Task.WaitAll(allpingthrd.ToArray)
@@ -476,24 +434,35 @@
     End Sub
 
     Private Sub CbB_Proxy_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CbB_Proxy.SelectedIndexChanged
-        If CbB_Proxy.SelectedIndex = 1 Then
-            TB_ProxyAddr.Enabled = True
-            TB_ProxyPort.Enabled = True
-            ListBox1.Enabled = False
-        ElseIf CbB_Proxy.SelectedIndex = 0 Then 'direct
-            TB_ProxyAddr.Enabled = False
-            TB_ProxyPort.Enabled = False
-            ListBox1.Enabled = True
-            TB_ProxyAddr.Clear()
-            TB_ProxyPort.Clear()
-        Else
-            TB_ProxyAddr.Enabled = False
-            TB_ProxyPort.Enabled = False
-            ListBox1.Enabled = False
-            Dim split = CbB_Proxy.Text.Split(":"c)
-            TB_ProxyAddr.Text = split(0)
-            TB_ProxyPort.Text = split(1)
-        End If
+        Select Case CbB_Proxy.SelectedIndex
+            Case 0 'ICMP
+                CB_S.Enabled = True
+                TB_ProxyAddr.Enabled = False
+                NUD_ProxyPort.Enabled = False
+                ListBox1.Enabled = True
+                TB_ProxyAddr.Clear()
+            Case 1 'HTTP direct
+                CB_S.Enabled = False
+                CB_S.Text = "localhost"
+                TB_ProxyAddr.Enabled = False
+                NUD_ProxyPort.Enabled = False
+                ListBox1.Enabled = False
+            Case 2 'HTTP custom proxy
+                CB_S.Enabled = False
+                CB_S.Text = "localhost"
+                TB_ProxyAddr.Enabled = True
+                NUD_ProxyPort.Enabled = True
+                ListBox1.Enabled = False
+            Case 3 'HTTP system proxy
+                CB_S.Enabled = False
+                CB_S.Text = "localhost"
+                TB_ProxyAddr.Enabled = False
+                NUD_ProxyPort.Enabled = False
+                ListBox1.Enabled = False
+                Dim split = CbB_Proxy.Text.Split(":"c)
+                TB_ProxyAddr.Text = split(0)
+                NUD_ProxyPort.Value = split(1)
+        End Select
     End Sub
 
     Private Sub Form1_SizeChanged(sender As Object, e As EventArgs) Handles Me.SizeChanged

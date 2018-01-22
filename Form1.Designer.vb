@@ -40,7 +40,6 @@ Partial Class Form1
         Me.CB_S = New System.Windows.Forms.ComboBox()
         Me.CB_T = New System.Windows.Forms.ComboBox()
         Me.GB_Proxy = New System.Windows.Forms.GroupBox()
-        Me.TB_ProxyPort = New System.Windows.Forms.TextBox()
         Me.TB_ProxyAddr = New System.Windows.Forms.TextBox()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.CbB_Proxy = New System.Windows.Forms.ComboBox()
@@ -51,31 +50,33 @@ Partial Class Form1
         Me.CMS = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.MI_Clear = New System.Windows.Forms.ToolStripMenuItem()
         Me.CB_LockMax = New System.Windows.Forms.CheckBox()
+        Me.NUD_ProxyPort = New System.Windows.Forms.NumericUpDown()
         CType(Me.NUD_Delay, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GB_Proxy.SuspendLayout()
         Me.GB_From.SuspendLayout()
         Me.GB_To.SuspendLayout()
         Me.GB_Results.SuspendLayout()
         Me.CMS.SuspendLayout()
+        CType(Me.NUD_ProxyPort, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'ListBox1
         '
         Me.ListBox1.FormattingEnabled = True
-        Me.ListBox1.ItemHeight = 18
+        Me.ListBox1.ItemHeight = 14
         Me.ListBox1.Location = New System.Drawing.Point(6, 42)
         Me.ListBox1.Name = "ListBox1"
-        Me.ListBox1.Size = New System.Drawing.Size(132, 184)
+        Me.ListBox1.Size = New System.Drawing.Size(132, 186)
         Me.ListBox1.Sorted = True
         Me.ListBox1.TabIndex = 0
         '
         'ListBox2
         '
         Me.ListBox2.FormattingEnabled = True
-        Me.ListBox2.ItemHeight = 18
+        Me.ListBox2.ItemHeight = 14
         Me.ListBox2.Location = New System.Drawing.Point(6, 42)
         Me.ListBox2.Name = "ListBox2"
-        Me.ListBox2.Size = New System.Drawing.Size(132, 184)
+        Me.ListBox2.Size = New System.Drawing.Size(132, 186)
         Me.ListBox2.Sorted = True
         Me.ListBox2.TabIndex = 2
         '
@@ -84,7 +85,7 @@ Partial Class Form1
         Me.Button1.Font = New System.Drawing.Font("Consolas", 11.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Button1.Location = New System.Drawing.Point(312, 172)
         Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(163, 68)
+        Me.Button1.Size = New System.Drawing.Size(180, 68)
         Me.Button1.TabIndex = 5
         Me.Button1.Text = "Start / Stop"
         Me.Button1.UseVisualStyleBackColor = True
@@ -106,7 +107,7 @@ Partial Class Form1
         Me.Label5.AutoSize = True
         Me.Label5.Location = New System.Drawing.Point(167, 20)
         Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(72, 18)
+        Me.Label5.Size = New System.Drawing.Size(63, 14)
         Me.Label5.TabIndex = 8
         Me.Label5.Text = "Average:"
         '
@@ -127,7 +128,7 @@ Partial Class Form1
         Me.Label7.AutoSize = True
         Me.Label7.Location = New System.Drawing.Point(167, 75)
         Me.Label7.Name = "Label7"
-        Me.Label7.Size = New System.Drawing.Size(48, 18)
+        Me.Label7.Size = New System.Drawing.Size(42, 14)
         Me.Label7.TabIndex = 12
         Me.Label7.Text = "Fail:"
         '
@@ -148,7 +149,7 @@ Partial Class Form1
         Me.Label9.AutoSize = True
         Me.Label9.Location = New System.Drawing.Point(167, 185)
         Me.Label9.Name = "Label9"
-        Me.Label9.Size = New System.Drawing.Size(120, 18)
+        Me.Label9.Size = New System.Drawing.Size(105, 14)
         Me.Label9.TabIndex = 14
         Me.Label9.Text = "Reply Address:"
         '
@@ -169,7 +170,7 @@ Partial Class Form1
         Me.Label11.AutoSize = True
         Me.Label11.Location = New System.Drawing.Point(167, 130)
         Me.Label11.Name = "Label11"
-        Me.Label11.Size = New System.Drawing.Size(96, 18)
+        Me.Label11.Size = New System.Drawing.Size(84, 14)
         Me.Label11.TabIndex = 16
         Me.Label11.Text = "Total sent:"
         '
@@ -187,11 +188,11 @@ Partial Class Form1
         'NUD_Delay
         '
         Me.NUD_Delay.Increment = New Decimal(New Integer() {250, 0, 0, 0})
-        Me.NUD_Delay.Location = New System.Drawing.Point(403, 113)
+        Me.NUD_Delay.Location = New System.Drawing.Point(402, 113)
         Me.NUD_Delay.Maximum = New Decimal(New Integer() {86400000, 0, 0, 0})
         Me.NUD_Delay.Minimum = New Decimal(New Integer() {30, 0, 0, 0})
         Me.NUD_Delay.Name = "NUD_Delay"
-        Me.NUD_Delay.Size = New System.Drawing.Size(72, 25)
+        Me.NUD_Delay.Size = New System.Drawing.Size(90, 22)
         Me.NUD_Delay.TabIndex = 18
         Me.NUD_Delay.Value = New Decimal(New Integer() {100, 0, 0, 0})
         '
@@ -200,7 +201,7 @@ Partial Class Form1
         Me.Label13.AutoSize = True
         Me.Label13.Location = New System.Drawing.Point(309, 115)
         Me.Label13.Name = "Label13"
-        Me.Label13.Size = New System.Drawing.Size(88, 18)
+        Me.Label13.Size = New System.Drawing.Size(77, 14)
         Me.Label13.TabIndex = 19
         Me.Label13.Text = "Delay (ms)"
         '
@@ -210,7 +211,7 @@ Partial Class Form1
         Me.CB_S.Items.AddRange(New Object() {"localhost"})
         Me.CB_S.Location = New System.Drawing.Point(6, 14)
         Me.CB_S.Name = "CB_S"
-        Me.CB_S.Size = New System.Drawing.Size(132, 26)
+        Me.CB_S.Size = New System.Drawing.Size(132, 22)
         Me.CB_S.TabIndex = 20
         '
         'CB_T
@@ -219,34 +220,27 @@ Partial Class Form1
         Me.CB_T.Items.AddRange(New Object() {"localhost", "www.google.com", "www.bing.com", "www.baidu.com", "www.yahoo.com"})
         Me.CB_T.Location = New System.Drawing.Point(6, 14)
         Me.CB_T.Name = "CB_T"
-        Me.CB_T.Size = New System.Drawing.Size(132, 26)
+        Me.CB_T.Size = New System.Drawing.Size(132, 22)
         Me.CB_T.TabIndex = 21
         '
         'GB_Proxy
         '
-        Me.GB_Proxy.Controls.Add(Me.TB_ProxyPort)
         Me.GB_Proxy.Controls.Add(Me.TB_ProxyAddr)
         Me.GB_Proxy.Controls.Add(Me.Label1)
         Me.GB_Proxy.Controls.Add(Me.CbB_Proxy)
+        Me.GB_Proxy.Controls.Add(Me.NUD_ProxyPort)
         Me.GB_Proxy.Location = New System.Drawing.Point(312, 12)
         Me.GB_Proxy.Name = "GB_Proxy"
-        Me.GB_Proxy.Size = New System.Drawing.Size(163, 93)
+        Me.GB_Proxy.Size = New System.Drawing.Size(180, 93)
         Me.GB_Proxy.TabIndex = 22
         Me.GB_Proxy.TabStop = False
-        Me.GB_Proxy.Text = "Proxy"
-        '
-        'TB_ProxyPort
-        '
-        Me.TB_ProxyPort.Location = New System.Drawing.Point(116, 65)
-        Me.TB_ProxyPort.Name = "TB_ProxyPort"
-        Me.TB_ProxyPort.Size = New System.Drawing.Size(40, 25)
-        Me.TB_ProxyPort.TabIndex = 3
+        Me.GB_Proxy.Text = "Protocol"
         '
         'TB_ProxyAddr
         '
         Me.TB_ProxyAddr.Location = New System.Drawing.Point(6, 65)
         Me.TB_ProxyAddr.Name = "TB_ProxyAddr"
-        Me.TB_ProxyAddr.Size = New System.Drawing.Size(104, 25)
+        Me.TB_ProxyAddr.Size = New System.Drawing.Size(104, 22)
         Me.TB_ProxyAddr.TabIndex = 2
         '
         'Label1
@@ -254,7 +248,7 @@ Partial Class Form1
         Me.Label1.AutoSize = True
         Me.Label1.Location = New System.Drawing.Point(6, 48)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(120, 18)
+        Me.Label1.Size = New System.Drawing.Size(105, 14)
         Me.Label1.TabIndex = 1
         Me.Label1.Text = "Address & Port"
         Me.Label1.UseMnemonic = False
@@ -263,10 +257,10 @@ Partial Class Form1
         '
         Me.CbB_Proxy.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.CbB_Proxy.FormattingEnabled = True
-        Me.CbB_Proxy.Items.AddRange(New Object() {"Direct", "Custom"})
+        Me.CbB_Proxy.Items.AddRange(New Object() {"ICMP", "HTTP (No Proxy)", "HTTP (Custom Proxy)"})
         Me.CbB_Proxy.Location = New System.Drawing.Point(6, 14)
         Me.CbB_Proxy.Name = "CbB_Proxy"
-        Me.CbB_Proxy.Size = New System.Drawing.Size(151, 26)
+        Me.CbB_Proxy.Size = New System.Drawing.Size(168, 22)
         Me.CbB_Proxy.TabIndex = 0
         '
         'GB_From
@@ -303,7 +297,7 @@ Partial Class Form1
         Me.GB_Results.Controls.Add(Me.TextBox1)
         Me.GB_Results.Controls.Add(Me.Lbl_ReAddr)
         Me.GB_Results.Controls.Add(Me.Label11)
-        Me.GB_Results.Location = New System.Drawing.Point(481, 12)
+        Me.GB_Results.Location = New System.Drawing.Point(498, 12)
         Me.GB_Results.Name = "GB_Results"
         Me.GB_Results.Size = New System.Drawing.Size(294, 234)
         Me.GB_Results.TabIndex = 22
@@ -317,11 +311,11 @@ Partial Class Form1
         Me.TLP.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
         Me.TLP.ContextMenuStrip = Me.CMS
         Me.TLP.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.TLP.Location = New System.Drawing.Point(0, 257)
+        Me.TLP.Location = New System.Drawing.Point(0, 258)
         Me.TLP.Name = "TLP"
         Me.TLP.RowCount = 1
         Me.TLP.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
-        Me.TLP.Size = New System.Drawing.Size(787, 0)
+        Me.TLP.Size = New System.Drawing.Size(804, 0)
         Me.TLP.TabIndex = 24
         '
         'CMS
@@ -329,12 +323,12 @@ Partial Class Form1
         Me.CMS.ImageScalingSize = New System.Drawing.Size(20, 20)
         Me.CMS.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MI_Clear})
         Me.CMS.Name = "CMS"
-        Me.CMS.Size = New System.Drawing.Size(119, 30)
+        Me.CMS.Size = New System.Drawing.Size(102, 26)
         '
         'MI_Clear
         '
         Me.MI_Clear.Name = "MI_Clear"
-        Me.MI_Clear.Size = New System.Drawing.Size(118, 26)
+        Me.MI_Clear.Size = New System.Drawing.Size(101, 22)
         Me.MI_Clear.Text = "Clear"
         '
         'CB_LockMax
@@ -344,17 +338,26 @@ Partial Class Form1
         Me.CB_LockMax.CheckState = System.Windows.Forms.CheckState.Checked
         Me.CB_LockMax.Location = New System.Drawing.Point(312, 144)
         Me.CB_LockMax.Name = "CB_LockMax"
-        Me.CB_LockMax.Size = New System.Drawing.Size(150, 22)
+        Me.CB_LockMax.Size = New System.Drawing.Size(131, 18)
         Me.CB_LockMax.TabIndex = 25
         Me.CB_LockMax.Text = "Lock max to 600"
         Me.CB_LockMax.UseVisualStyleBackColor = True
         '
+        'NUD_ProxyPort
+        '
+        Me.NUD_ProxyPort.Location = New System.Drawing.Point(116, 65)
+        Me.NUD_ProxyPort.Maximum = New Decimal(New Integer() {86400000, 0, 0, 0})
+        Me.NUD_ProxyPort.Name = "NUD_ProxyPort"
+        Me.NUD_ProxyPort.Size = New System.Drawing.Size(58, 22)
+        Me.NUD_ProxyPort.TabIndex = 3
+        Me.NUD_ProxyPort.Value = New Decimal(New Integer() {80, 0, 0, 0})
+        '
         'Form1
         '
         Me.AcceptButton = Me.Button1
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 18.0!)
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(7.0!, 14.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(787, 257)
+        Me.ClientSize = New System.Drawing.Size(804, 258)
         Me.Controls.Add(Me.CB_LockMax)
         Me.Controls.Add(Me.TLP)
         Me.Controls.Add(Me.GB_Results)
@@ -376,6 +379,7 @@ Partial Class Form1
         Me.GB_Results.ResumeLayout(False)
         Me.GB_Results.PerformLayout()
         Me.CMS.ResumeLayout(False)
+        CType(Me.NUD_ProxyPort, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -400,7 +404,6 @@ Partial Class Form1
     Friend WithEvents GB_From As System.Windows.Forms.GroupBox
     Friend WithEvents GB_To As System.Windows.Forms.GroupBox
     Friend WithEvents GB_Results As System.Windows.Forms.GroupBox
-    Friend WithEvents TB_ProxyPort As System.Windows.Forms.TextBox
     Friend WithEvents TB_ProxyAddr As System.Windows.Forms.TextBox
     Friend WithEvents Label1 As System.Windows.Forms.Label
     Friend WithEvents CbB_Proxy As System.Windows.Forms.ComboBox
@@ -408,5 +411,5 @@ Partial Class Form1
     Friend WithEvents CB_LockMax As System.Windows.Forms.CheckBox
     Friend WithEvents CMS As System.Windows.Forms.ContextMenuStrip
     Friend WithEvents MI_Clear As System.Windows.Forms.ToolStripMenuItem
-
+    Friend WithEvents NUD_ProxyPort As NumericUpDown
 End Class
